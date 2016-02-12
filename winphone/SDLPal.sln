@@ -1,13 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL2-WinPhone81", "SDL2\VisualC-WinRT\WinPhone81_VS2013\SDL-WinPhone81.vcxproj", "{48FADC0E-964D-4DAB-BCED-372E0AD19577}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL2-UWP", "SDL2\VisualC-WinRT\UWP_VS2015\SDL-UWP.vcxproj", "{89E9B32E-A86A-47C3-A948-D2B1622925CE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDLPalCore", "SDLPalCore\SDLPalCore.vcxproj", "{704D3871-2E86-42EF-A607-CBCFB7A7EBAB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDLPal", "SDLPal\SDLPal.vcxproj", "{4C240E16-F6F6-4D60-B29B-7F7ACB4815D7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{89E9B32E-A86A-47C3-A948-D2B1622925CE} = {89E9B32E-A86A-47C3-A948-D2B1622925CE}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,16 +22,18 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{48FADC0E-964D-4DAB-BCED-372E0AD19577}.Debug|ARM.ActiveCfg = Debug|ARM
-		{48FADC0E-964D-4DAB-BCED-372E0AD19577}.Debug|ARM.Build.0 = Debug|ARM
-		{48FADC0E-964D-4DAB-BCED-372E0AD19577}.Debug|Win32.ActiveCfg = Debug|Win32
-		{48FADC0E-964D-4DAB-BCED-372E0AD19577}.Debug|Win32.Build.0 = Debug|Win32
-		{48FADC0E-964D-4DAB-BCED-372E0AD19577}.Debug|x64.ActiveCfg = Debug|Win32
-		{48FADC0E-964D-4DAB-BCED-372E0AD19577}.Release|ARM.ActiveCfg = Release|ARM
-		{48FADC0E-964D-4DAB-BCED-372E0AD19577}.Release|ARM.Build.0 = Release|ARM
-		{48FADC0E-964D-4DAB-BCED-372E0AD19577}.Release|Win32.ActiveCfg = Release|Win32
-		{48FADC0E-964D-4DAB-BCED-372E0AD19577}.Release|Win32.Build.0 = Release|Win32
-		{48FADC0E-964D-4DAB-BCED-372E0AD19577}.Release|x64.ActiveCfg = Release|Win32
+		{89E9B32E-A86A-47C3-A948-D2B1622925CE}.Debug|ARM.ActiveCfg = Debug|ARM
+		{89E9B32E-A86A-47C3-A948-D2B1622925CE}.Debug|ARM.Build.0 = Debug|ARM
+		{89E9B32E-A86A-47C3-A948-D2B1622925CE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{89E9B32E-A86A-47C3-A948-D2B1622925CE}.Debug|Win32.Build.0 = Debug|Win32
+		{89E9B32E-A86A-47C3-A948-D2B1622925CE}.Debug|x64.ActiveCfg = Debug|x64
+		{89E9B32E-A86A-47C3-A948-D2B1622925CE}.Debug|x64.Build.0 = Debug|x64
+		{89E9B32E-A86A-47C3-A948-D2B1622925CE}.Release|ARM.ActiveCfg = Release|ARM
+		{89E9B32E-A86A-47C3-A948-D2B1622925CE}.Release|ARM.Build.0 = Release|ARM
+		{89E9B32E-A86A-47C3-A948-D2B1622925CE}.Release|Win32.ActiveCfg = Release|Win32
+		{89E9B32E-A86A-47C3-A948-D2B1622925CE}.Release|Win32.Build.0 = Release|Win32
+		{89E9B32E-A86A-47C3-A948-D2B1622925CE}.Release|x64.ActiveCfg = Release|x64
+		{89E9B32E-A86A-47C3-A948-D2B1622925CE}.Release|x64.Build.0 = Release|x64
 		{704D3871-2E86-42EF-A607-CBCFB7A7EBAB}.Debug|ARM.ActiveCfg = Debug|ARM
 		{704D3871-2E86-42EF-A607-CBCFB7A7EBAB}.Debug|ARM.Build.0 = Debug|ARM
 		{704D3871-2E86-42EF-A607-CBCFB7A7EBAB}.Debug|ARM.Deploy.0 = Debug|ARM

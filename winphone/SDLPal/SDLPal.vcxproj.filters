@@ -27,6 +27,10 @@
       <UniqueIdentifier>{1b4126fa-ab18-4d2a-8fc0-dff551a94158}</UniqueIdentifier>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="资产\Data">
+      <UniqueIdentifier>{4041f4fd-1bc6-4474-bbe8-2e6b3240de6e}</UniqueIdentifier>
+      <Extensions>mkf;bmp;dat</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinPhoneUtil.cpp" />
@@ -74,5 +78,89 @@
     <Image Include="Assets\SplashScreen.scale-100.png">
       <Filter>资产</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SDLPal_TemporaryKey.pfx" />
+    <None Include="Assets\Data\1.rpg">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\2.rpg">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\3.rpg">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\4.rpg">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\5.rpg">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\abc.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\ball.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\data.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\f.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\fbp.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\fire.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\gop.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\m.msg">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\map.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\mgo.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\mus.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\pat.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\rgm.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\rng.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\sdlpal.cfg">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\sounds.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\sss.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\voc.mkf">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\word.dat">
+      <Filter>资产\Data</Filter>
+    </None>
+    <None Include="Assets\Data\overlay.bmp">
+      <Filter>资产\Data</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SDLPal.rc" />
   </ItemGroup>
 </Project>

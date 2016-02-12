@@ -25,6 +25,8 @@ static void ConvertString(Platform::String^ src, std::string& dst)
 
 static bool CheckGamePath(Windows::Storage::StorageFolder^ root)
 {
+	std::string msg;
+	char xmsg[256];
 	Platform::String^ required_files[] = {
 		L"ABC.MKF", L"BALL.MKF", L"DATA.MKF", L"F.MKF", L"FBP.MKF",
 		L"FIRE.MKF", L"GOP.MKF", L"MAP.MKF", L"MGO.MKF", L"PAT.MKF",
@@ -46,17 +48,30 @@ static bool CheckGamePath(Windows::Storage::StorageFolder^ root)
 		for (int i = 0; i < 13; i++)
 		{
 			auto filetask = concurrency::create_task(foldertask.get()->GetFileAsync(required_files[i]));
-			if (!WaitOnTask(filetask, 500) || _waccess_s(filetask.get()->Path->Begin(), 2)) return false;
+			if (!WaitOnTask(filetask, 500) || _waccess_s(filetask.get()->Path->Begin(), 4)) {
+				ConvertString(filetask.get()->Path, msg);
+				sprintf(xmsg, "file:%s, err:%s", msg.c_str(), strerror(errno));
+			}
+			else {
+				ConvertString(filetask.get()->Path, msg);
+				sprintf(xmsg, "file:%s, err:%s", msg.c_str(), strerror(errno));
+				return true;
+			}
 		}
 		for (int i = 0; i < 2; i++)
 		{
 			auto filetask = concurrency::create_task(foldertask.get()->GetFileAsync(optional_required_files[i]));
-			try { if (WaitOnTask(filetask, 500) && _waccess_s(filetask.get()->Path->Begin(), 2) == 0) return true; }
+			try { if (WaitOnTask(filetask, 500) && _waccess_s(filetask.get()->Path->Begin(), 2) == 0)
+				return true; }
 			catch(Platform::Exception^) {}
 		}
 	}
-	catch(Platform::Exception^)
-	{ /* Accessing SD card failed, or required file is missing, or access is denied */ }
+	catch(Platform::Exception^ e)
+	{ /* Accessing SD card failed, or required file is missing, or access is denied */ 
+		std::string errMsg;
+		ConvertString(e->Message, errMsg);
+		printf("Access Error:%s\n", errMsg.c_str());
+	}
 	return false;
 }
 
@@ -65,7 +80,7 @@ LPCSTR UTIL_BasePath(VOID)
 {
 	if (g_basepath.empty())
 	{
-		auto enumtask = concurrency::create_task(Windows::Storage::KnownFolders::RemovableDevices->GetFoldersAsync());
+		auto enumtask = concurrency::create_task(Windows::Storage::KnownFolders::PicturesLibrary->GetFoldersAsync());
 		if (WaitOnTask(enumtask, 1000))		// Wait for 1000ms max
 		{
 			auto folderiter = enumtask.get()->First();
@@ -94,7 +109,9 @@ LPCSTR UTIL_BasePath(VOID)
 
 		if (g_basepath.empty())
 		{
-			g_basepath.assign("Assets\\Data\\");
+			auto path = Windows::ApplicationModel::Package::Current->InstalledLocation->Path+"\\Assets\\Data\\";
+			ConvertString(path, g_basepath);
+			//g_basepath.assign("Assets\\Data\\");
 		}
 	}
 	return g_basepath.c_str();
