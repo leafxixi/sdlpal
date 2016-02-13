@@ -119,7 +119,7 @@
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -276,6 +276,7 @@
     <None Include="SDLPal_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AsyncHelper.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
