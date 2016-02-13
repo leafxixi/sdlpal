@@ -136,7 +136,9 @@ UTIL_WP_GetScreenSize_exit:
 extern "C" {
 	std::hash<std::string> hasher;
 	std::unordered_map<FILE*, std::wstring> fileMap;
+	std::unordered_map<FILE*, size_t> fileSizeMap;
 	std::unordered_map<FILE*, long> fileOffsetMap;
+	std::unordered_map<FILE*, Platform::Array<uint8>^ > fileContentMap;
 	char outputStr[512];
 
 	auto openFile(const std::wstring &wid_str) {
@@ -146,10 +148,17 @@ extern "C" {
 		auto storageFile = AWait(g_root->GetFileAsync(nFilename));
 		return storageFile;
 	}
-	long file_length(FILE *fp) {
-		auto storageFile = openFile(fileMap[fp]);
-		auto basicInfo = AWait(storageFile->GetBasicPropertiesAsync());
-		return basicInfo->Size;
+	size_t file_length(FILE *fp) {
+		auto sizeIter = fileSizeMap.find(fp);
+		if (sizeIter == fileSizeMap.end()) {
+			auto storageFile = openFile(fileMap[fp]);
+			auto basicInfo = AWait(storageFile->GetBasicPropertiesAsync());
+			fileSizeMap[fp] = basicInfo->Size;
+			return basicInfo->Size;
+		}
+		else {
+			return sizeIter->second;
+		}
 	}
 
 	FILE *fopen_uwp(const char *filename, const char *mode) {
@@ -159,28 +168,41 @@ extern "C" {
 		setlocale(LC_ALL, "chs");
 		mbstowcs_s(&convertedChars, wcstring, newsize, filename, _TRUNCATE);
 		std::wstring wid_str = std::wstring(wcstring);
-		auto storageFile = openFile(wid_str);
-		FILE *result = reinterpret_cast<FILE*>(hasher(filename));
-		fileMap[result] = wid_str;
-		fileOffsetMap[result] = 0;
-		return result;
+		try {
+			auto storageFile = openFile(wid_str);
+			FILE *result = reinterpret_cast<FILE*>(hasher(filename));
+			fileMap[result] = wid_str;
+			fileOffsetMap[result] = 0;
+
+			auto buffer = AWait(Windows::Storage::FileIO::ReadBufferAsync(storageFile));
+			auto dataReader = Windows::Storage::Streams::DataReader::FromBuffer(buffer);
+			auto length = dataReader->UnconsumedBufferLength;
+			auto origLength = length;
+			auto bytes = ref new Platform::Array<uint8>(length);
+			dataReader->ReadBytes(bytes);
+			fileContentMap[result] = bytes;
+			return result;
+		}
+		catch (Platform::Exception^ e){
+			return nullptr;
+		}
 	}
 	long ftell_uwp(FILE *fp) {
-		auto storageFile = openFile(fileMap[fp]);
+		//auto storageFile = openFile(fileMap[fp]);
 		return fileOffsetMap[fp];
 	}
 	int fseek_uwp(FILE *fp, long offset, int whence) {
-		auto storageFile = openFile(fileMap[fp]);
+		//auto storageFile = openFile(fileMap[fp]);
 		long length = file_length(fp);
 		switch (whence) {
 		case SEEK_CUR:
 				offset += ftell_uwp(fp);
 				break;
 		case SEEK_END:
-				offset += length;
-				break;
+			offset += length;
+			break;
 		}
-		offset = min(max(0,offset), length);
+		offset = min(max(0, offset), length);
 		fileOffsetMap[fp] = offset;
 		return offset;
 	}
@@ -202,35 +224,21 @@ extern "C" {
 		return eof ? nullptr : ptr;
 	}
 	size_t fread_uwp(void *ptr, size_t size, size_t nitems, FILE *fp) {
-		auto length = size * nitems;
-		auto storageFile = openFile(fileMap[fp]);
-		auto origOffset = ftell_uwp(fp);
-		auto buffer = AWait(Windows::Storage::FileIO::ReadBufferAsync(storageFile));
-		auto dataReader = Windows::Storage::Streams::DataReader::FromBuffer(buffer);
-		auto bytesSkip = ref new Platform::Array<uint8>(origOffset);
-		dataReader->ReadBytes(bytesSkip);
-		auto origLength = length;
-		length = min(length, dataReader->UnconsumedBufferLength);
-		auto bytes = ref new Platform::Array<uint8>(length);
-		dataReader->ReadBytes(bytes);
-		std::copy(bytes->begin(), bytes->end(), (uint8*)ptr);
-		fileOffsetMap[fp] = origOffset + length;
-		return length;
-	}
-	int fputs_uwp(const char *ptr, size_t &length, FILE *fp) {
-		auto storageFile = openFile(fileMap[fp]);
-		auto file = AWait(storageFile->OpenAsync(Windows::Storage::FileAccessMode::ReadWrite));
-		auto fileStream = file->GetOutputStreamAt(ftell_uwp(fp));
-		auto dataWriter = ref new Windows::Storage::Streams::DataWriter(fileStream);
-		length = min(length, dataWriter->UnstoredBufferLength);
-		auto bytes = ref new Platform::Array<uint8>(length);
-		std::copy(ptr, ptr + length, bytes->begin());
-		dataWriter->WriteBytes(bytes);
+		auto length = size*nitems;
+		auto fileSize = file_length(fp);
+		auto bytes = fileContentMap[fp];
+		auto offset = fileOffsetMap[fp];
+		length = min(fileSize - offset, length);
+		std::copy(bytes->begin()+offset, bytes->begin()+offset+length, (uint8*)ptr);
+		fileOffsetMap[fp] = offset + length;
 		return length;
 	}
 	size_t fwrite_uwp(const void *ptr, size_t size, size_t nitems, FILE *fp) {
 		auto length = size * nitems;
-		fputs_uwp((const char*)ptr, length, fp);
+		auto storageFile = openFile(fileMap[fp]);
+		auto bytes = ref new Platform::Array<uint8>(length);
+		std::copy((uint8*)ptr, (uint8*)ptr + length, bytes->begin());
+		AWait(Windows::Storage::FileIO::WriteBytesAsync(storageFile, bytes));
 		return length;
 	}
 	int fclose_uwp(FILE *fp) {
