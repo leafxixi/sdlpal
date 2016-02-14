@@ -3,6 +3,7 @@
 #include <DXGI.h>
 #include <ppltasks.h>
 #include <unordered_map>
+#include <sstream>
 #include "AsyncHelper.h"
 
 #define PAL_PATH_NAME	"SDLPAL"
@@ -138,6 +139,7 @@ extern "C" {
 	std::unordered_map<FILE*, std::wstring> fileMap;
 	std::unordered_map<FILE*, size_t> fileSizeMap;
 	std::unordered_map<FILE*, long> fileOffsetMap;
+	std::unordered_map<FILE*, std::unique_ptr<std::istringstream>> fileStreamMap;
 	std::unordered_map<FILE*, Platform::Array<uint8>^ > fileContentMap;
 	char outputStr[512];
 
@@ -209,24 +211,26 @@ extern "C" {
 	void rewind_uwp(FILE *fp) {
 		fseek_uwp(fp,0,SEEK_SET);
 	}
-	int fgetc_uwp(FILE *fp){
-		unsigned char buf;
-		fread_uwp(&buf,1,1,fp);
-		return buf;
-	}
 	char *fgets_uwp(char *ptr, size_t length, FILE *fp) {
-		auto storageFile = openFile(fileMap[fp]);
-		auto origOffset = fileOffsetMap[fp];
-		auto texts = AWait(Windows::Storage::FileIO::ReadLinesAsync(storageFile));
-		std::string msg;
-		bool eof;
-		long offset = min(texts->Size-1, origOffset);
-		ConvertString(texts->GetView()->GetAt(offset), msg);
-		fileOffsetMap[fp] = offset+1;
-		eof = (offset >= texts->Size-1);
-		if( !eof )
-			strcpy(ptr, msg.c_str());
-		return eof ? nullptr : ptr;
+		auto streamIter = fileStreamMap.find(fp);
+		if (streamIter == fileStreamMap.end()) {
+			auto bytes = fileContentMap[fp];
+			char *buf = new char[bytes->Length];
+			std::copy(bytes->begin(), bytes->end(), buf);
+			auto ss = new std::istringstream(buf);
+			delete[] buf;
+			auto pair = fileStreamMap.emplace(fp, std::unique_ptr<std::istringstream>(ss));
+			if (pair.second)
+				streamIter = pair.first;
+		}
+		if (streamIter != fileStreamMap.end()) {
+			std::istringstream *ss = streamIter->second.get();
+			if (!ss->eof()) {
+				ss->getline(ptr, length);
+				return ptr;
+			}
+		}
+		return nullptr;
 	}
 	size_t fread_uwp(void *ptr, size_t size, size_t nitems, FILE *fp) {
 		auto length = size*nitems;
@@ -237,6 +241,11 @@ extern "C" {
 		std::copy(bytes->begin()+offset, bytes->begin()+offset+length, (uint8*)ptr);
 		fileOffsetMap[fp] = offset + length;
 		return length;
+	}
+	int fgetc_uwp(FILE *fp) {
+		unsigned char buf;
+		size_t readed = fread_uwp((void*)&buf, 1, 1, fp);
+		return readed == 0 ? EOF : buf;
 	}
 	size_t fwrite_uwp(const void *ptr, size_t size, size_t nitems, FILE *fp) {
 		auto length = size * nitems;

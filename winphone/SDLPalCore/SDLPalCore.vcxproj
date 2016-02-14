@@ -250,6 +250,7 @@
     <ClInclude Include="..\..\uibattle.h" />
     <ClInclude Include="..\..\uigame.h" />
     <ClInclude Include="..\..\util.h" />
+    <ClInclude Include="..\..\uwp_fakeio.h" />
     <ClInclude Include="..\..\video.h" />
   </ItemGroup>
   <ItemGroup>

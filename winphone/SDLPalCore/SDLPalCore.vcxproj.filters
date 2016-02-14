@@ -374,6 +374,9 @@
     <ClInclude Include="..\..\resampler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\uwp_fakeio.h">
+      <Filter>adplug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\adplug\binfile.cpp">

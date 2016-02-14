@@ -27,7 +27,9 @@
 #endif
 
 #ifdef __WINPHONE__
-#include "uwp_fakeio.h"
+extern "C" {
+#include "../uwp_fakeio.h"
+}
 #endif
 
 /***** Configuration *****/
