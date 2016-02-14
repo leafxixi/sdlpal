@@ -26,6 +26,10 @@
 #pragma warning (disable:4267)
 #endif
 
+#ifdef __WINPHONE__
+#include "uwp_fakeio.h"
+#endif
+
 /***** Configuration *****/
 
 // BINIO_ENABLE_STRING - Build std::string supporting methods

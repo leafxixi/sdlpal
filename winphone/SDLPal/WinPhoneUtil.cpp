@@ -54,7 +54,7 @@ static bool CheckGamePath(Windows::Storage::StorageFolder^ root)
 		}
 	}
 	catch(Platform::Exception^ e)
-	{ /* Accessing SD card failed, or required file is missing, or access is denied */ 	}
+	{ /* Accessing SD card failed, or required file is missing, or access is denied */	}
 	return false;
 }
 
@@ -208,6 +208,11 @@ extern "C" {
 	}
 	void rewind_uwp(FILE *fp) {
 		fseek_uwp(fp,0,SEEK_SET);
+	}
+	int fgetc_uwp(FILE *fp){
+		unsigned char buf;
+		fread_uwp(&buf,1,1,fp);
+		return buf;
 	}
 	char *fgets_uwp(char *ptr, size_t length, FILE *fp) {
 		auto storageFile = openFile(fileMap[fp]);

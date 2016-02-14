@@ -216,3 +216,6 @@ winphone/SDLPal/Assets/Data/*
 !winphone/SDLPal/Assets/Data/README.txt
 winphone/SDL2/*
 !winphone/SDL2/README.txt
+
+iOS/SDL2/*
+*xc*
