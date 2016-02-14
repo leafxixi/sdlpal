@@ -111,6 +111,12 @@ BOOL UTIL_GetScreenSize(DWORD *pdwScreenWidth, DWORD *pdwScreenHeight)
 	IDXGIOutput* pOutput = nullptr;
 	DWORD retval = FALSE;
 
+	auto resourceContent = Windows::ApplicationModel::Resources::Core::ResourceContext::GetForCurrentView();
+	auto qualifiedValues = resourceContent->QualifierValues;
+	Platform::String ^DeviceFamily = L"DeviceFamily", ^Mobile = L"Mobile";
+	if (!qualifiedValues->HasKey("DeviceFamily") || !Mobile->Equals(qualifiedValues->Lookup(DeviceFamily)))
+		goto UTIL_WP_GetScreenSize_exit;
+
 	if (!pdwScreenWidth || !pdwScreenHeight) return FALSE;
 
 	if (FAILED(CreateDXGIFactory1(IID_IDXGIFactory1, (void**)&pFactory))) goto UTIL_WP_GetScreenSize_exit;
@@ -136,11 +142,14 @@ UTIL_WP_GetScreenSize_exit:
 
 extern "C" {
 	std::hash<std::string> hasher;
-	std::unordered_map<FILE*, std::wstring> fileMap;
-	std::unordered_map<FILE*, size_t> fileSizeMap;
-	std::unordered_map<FILE*, long> fileOffsetMap;
-	std::unordered_map<FILE*, std::unique_ptr<std::istringstream>> fileStreamMap;
-	std::unordered_map<FILE*, Platform::Array<uint8>^ > fileContentMap;
+	struct EmulatedFileProperties {
+		std::wstring filename;
+		size_t size;
+		long offset;
+		std::istringstream *pstream;
+		uint8 *buf;
+	};
+	std::unordered_map<FILE*, EmulatedFileProperties> filePropertiesMap;
 	char outputStr[512];
 
 	auto openFile(const std::wstring &wid_str) {
@@ -149,18 +158,6 @@ extern "C" {
 		Platform::String ^nFilename = ref new Platform::String(w_filename);
 		auto storageFile = AWait(g_root->GetFileAsync(nFilename));
 		return storageFile;
-	}
-	size_t file_length(FILE *fp) {
-		auto sizeIter = fileSizeMap.find(fp);
-		if (sizeIter == fileSizeMap.end()) {
-			auto storageFile = openFile(fileMap[fp]);
-			auto basicInfo = AWait(storageFile->GetBasicPropertiesAsync());
-			fileSizeMap[fp] = basicInfo->Size;
-			return basicInfo->Size;
-		}
-		else {
-			return sizeIter->second;
-		}
 	}
 
 	FILE *fopen_uwp(const char *filename, const char *mode) {
@@ -173,16 +170,18 @@ extern "C" {
 		try {
 			auto storageFile = openFile(wid_str);
 			FILE *result = reinterpret_cast<FILE*>(hasher(filename));
-			fileMap[result] = wid_str;
-			fileOffsetMap[result] = 0;
 
 			auto buffer = AWait(Windows::Storage::FileIO::ReadBufferAsync(storageFile));
 			auto dataReader = Windows::Storage::Streams::DataReader::FromBuffer(buffer);
 			auto length = dataReader->UnconsumedBufferLength;
-			auto origLength = length;
 			auto bytes = ref new Platform::Array<uint8>(length);
 			dataReader->ReadBytes(bytes);
-			fileContentMap[result] = bytes;
+
+			uint8 *buf = new uint8[length];
+			std::copy(bytes->begin(), bytes->end(), buf);
+			auto ss = new std::istringstream((char*)buf);
+
+			filePropertiesMap[result] = { wid_str,length,0,ss,buf };
 			return result;
 		}
 		catch (Platform::Exception^ e){
@@ -190,41 +189,36 @@ extern "C" {
 		}
 	}
 	long ftell_uwp(FILE *fp) {
-		//auto storageFile = openFile(fileMap[fp]);
-		return fileOffsetMap[fp];
+		EmulatedFileProperties &p = filePropertiesMap[fp];
+		if (&p != nullptr) {
+			return p.offset;
+		}
+		return 0;
 	}
 	int fseek_uwp(FILE *fp, long offset, int whence) {
-		//auto storageFile = openFile(fileMap[fp]);
-		long length = file_length(fp);
-		switch (whence) {
-		case SEEK_CUR:
+		EmulatedFileProperties &p = filePropertiesMap[fp];
+		if (&p != nullptr) {
+			long length = p.size;
+			switch (whence) {
+			case SEEK_CUR:
 				offset += ftell_uwp(fp);
 				break;
-		case SEEK_END:
-			offset += length;
-			break;
+			case SEEK_END:
+				offset += length;
+				break;
+			}
+			offset = min(max(0, offset), length);
+			p.offset = offset;
 		}
-		offset = min(max(0, offset), length);
-		fileOffsetMap[fp] = offset;
 		return offset;
 	}
 	void rewind_uwp(FILE *fp) {
 		fseek_uwp(fp,0,SEEK_SET);
 	}
 	char *fgets_uwp(char *ptr, size_t length, FILE *fp) {
-		auto streamIter = fileStreamMap.find(fp);
-		if (streamIter == fileStreamMap.end()) {
-			auto bytes = fileContentMap[fp];
-			char *buf = new char[bytes->Length];
-			std::copy(bytes->begin(), bytes->end(), buf);
-			auto ss = new std::istringstream(buf);
-			delete[] buf;
-			auto pair = fileStreamMap.emplace(fp, std::unique_ptr<std::istringstream>(ss));
-			if (pair.second)
-				streamIter = pair.first;
-		}
-		if (streamIter != fileStreamMap.end()) {
-			std::istringstream *ss = streamIter->second.get();
+		EmulatedFileProperties &p = filePropertiesMap[fp];
+		if (&p != nullptr) {
+			std::istringstream *ss = p.pstream;
 			if (!ss->eof()) {
 				ss->getline(ptr, length);
 				return ptr;
@@ -234,12 +228,12 @@ extern "C" {
 	}
 	size_t fread_uwp(void *ptr, size_t size, size_t nitems, FILE *fp) {
 		auto length = size*nitems;
-		auto fileSize = file_length(fp);
-		auto bytes = fileContentMap[fp];
-		auto offset = fileOffsetMap[fp];
-		length = min(fileSize - offset, length);
-		std::copy(bytes->begin()+offset, bytes->begin()+offset+length, (uint8*)ptr);
-		fileOffsetMap[fp] = offset + length;
+		EmulatedFileProperties &p = filePropertiesMap[fp];
+		if (&p != nullptr) {
+			length = min(p.size - p.offset, length);
+			std::copy(p.buf + p.offset, p.buf + p.offset + length, (uint8*)ptr);
+			p.offset += length;
+		}
 		return length;
 	}
 	int fgetc_uwp(FILE *fp) {
@@ -249,14 +243,31 @@ extern "C" {
 	}
 	size_t fwrite_uwp(const void *ptr, size_t size, size_t nitems, FILE *fp) {
 		auto length = size * nitems;
-		auto storageFile = openFile(fileMap[fp]);
-		auto bytes = ref new Platform::Array<uint8>(length);
-		std::copy((uint8*)ptr, (uint8*)ptr + length, bytes->begin());
-		AWait(Windows::Storage::FileIO::WriteBytesAsync(storageFile, bytes));
+		EmulatedFileProperties &p = filePropertiesMap[fp];
+		if (&p != nullptr) {
+			auto storageFile = openFile(p.filename);
+			auto bytes = ref new Platform::Array<uint8>(length);
+			std::copy((uint8*)ptr, (uint8*)ptr + length, bytes->begin());
+			AWait(Windows::Storage::FileIO::WriteBytesAsync(storageFile, bytes));
+		}
 		return length;
 	}
 	int fclose_uwp(FILE *fp) {
-		auto storageFile = openFile(fileMap[fp]);
+		EmulatedFileProperties &p = filePropertiesMap[fp];
+		if (&p != nullptr) {
+			delete p.pstream;
+			delete[] p.buf;
+		}
+		filePropertiesMap.erase(fp);
+		return 0;
+	}
+	int feof_uwp(FILE *fp) {
+		EmulatedFileProperties &p = filePropertiesMap[fp];
+		if (&p != nullptr) {
+			std::istringstream *ss = p.pstream;
+			if (ss->eof())
+				return 1;
+		}
 		return 0;
 	}
 }

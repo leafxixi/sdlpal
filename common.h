@@ -231,7 +231,7 @@ extern "C"
 
 #define PAL_PREFIX            UTIL_BasePath()
 #define PAL_SAVE_PREFIX       UTIL_SavePath()
-#define PAL_HAS_TOUCH         1
+#define PAL_HAS_TOUCH         0
 #define PAL_AUDIO_DEFAULT_BUFFER_SIZE   4096
 #define PAL_DEFAULT_WINDOW_WIDTH   320
 #define PAL_DEFAULT_WINDOW_HEIGHT  200

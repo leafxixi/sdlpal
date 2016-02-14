@@ -33,6 +33,7 @@ char *fgets_uwp(char *ptr, size_t size, FILE *fp);
 int fgetc_uwp(FILE *fp);
 size_t fwrite_uwp(const void *ptr, size_t size, size_t nitems, FILE *fp);
 int fclose_uwp(FILE *fp);
+int feof_uwp(FILE *fp);
 
 #define fopen fopen_uwp
 #define ftell ftell_uwp
@@ -43,5 +44,6 @@ int fclose_uwp(FILE *fp);
 #define fgets fgets_uwp
 #define fgetc fgetc_uwp
 #define fclose fclose_uwp
+#define feof feof_uwp
 
 #endif //_UWP_FAKEIO_H

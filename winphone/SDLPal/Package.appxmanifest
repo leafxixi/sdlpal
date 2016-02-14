@@ -16,12 +16,16 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="SDLPal.App">
       <uap:VisualElements DisplayName="SDLPal" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png" Description="SDL-based reimplementation of classic Chinese RPG &quot;Xian Jian Qi Xia Zhuan&quot;." BackgroundColor="transparent">
+        <uap:LockScreen Notification="badgeAndTileText" BadgeLogo="Assets\Badge.png" />
         <uap:DefaultTile Wide310x150Logo="Assets\WideLogo.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />
           </uap:ShowNameOnTiles>
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="black" />
+        <uap:InitialRotationPreference>
+          <uap:Rotation Preference="landscape" />
+        </uap:InitialRotationPreference>
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.fileTypeAssociation">
