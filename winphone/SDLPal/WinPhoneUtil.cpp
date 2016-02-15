@@ -37,7 +37,8 @@ static bool CheckGamePath(Windows::Storage::StorageFolder^ root)
 		for (int i = 0; i < 13; i++)
 		{
 			try {
-				auto file = AWait(folder->GetFileAsync(required_files[i]));
+				if (!AWait(AWait(folder->GetFileAsync(required_files[i]))->OpenReadAsync())->CanRead)
+					return false;
 			}
 			catch (Platform::Exception^ e) {
 				return false;
@@ -47,9 +48,10 @@ static bool CheckGamePath(Windows::Storage::StorageFolder^ root)
 		{
 			try
 			{
-				auto filetask = AWait(folder->GetFileAsync(optional_required_files[i]));
-				g_root = folder;
-				return true;
+				if( AWait(AWait(folder->GetFileAsync(optional_required_files[i]))->OpenReadAsync())->CanRead ) {
+					g_root = folder;
+					return true;
+				}
 			}
 			catch (Platform::Exception^ e) {}
 		}
@@ -101,7 +103,13 @@ LPCSTR UTIL_SavePath(VOID)
 	}
 	return g_savepath.c_str();
 }
-
+extern "C"
+BOOL UTIL_IsMobile(VOID) {
+	auto resourceContent = Windows::ApplicationModel::Resources::Core::ResourceContext::GetForCurrentView();
+	auto qualifiedValues = resourceContent->QualifierValues;
+	Platform::String ^DeviceFamily = L"DeviceFamily", ^Mobile = L"Mobile";
+	return qualifiedValues->HasKey("DeviceFamily") && Mobile->Equals(qualifiedValues->Lookup(DeviceFamily));
+}
 extern "C"
 BOOL UTIL_GetScreenSize(DWORD *pdwScreenWidth, DWORD *pdwScreenHeight)
 {
@@ -111,10 +119,7 @@ BOOL UTIL_GetScreenSize(DWORD *pdwScreenWidth, DWORD *pdwScreenHeight)
 	IDXGIOutput* pOutput = nullptr;
 	DWORD retval = FALSE;
 
-	auto resourceContent = Windows::ApplicationModel::Resources::Core::ResourceContext::GetForCurrentView();
-	auto qualifiedValues = resourceContent->QualifierValues;
-	Platform::String ^DeviceFamily = L"DeviceFamily", ^Mobile = L"Mobile";
-	if (!qualifiedValues->HasKey("DeviceFamily") || !Mobile->Equals(qualifiedValues->Lookup(DeviceFamily)))
+	if (!UTIL_IsMobile())
 		goto UTIL_WP_GetScreenSize_exit;
 
 	if (!pdwScreenWidth || !pdwScreenHeight) return FALSE;
@@ -152,11 +157,25 @@ extern "C" {
 	std::unordered_map<FILE*, EmulatedFileProperties> filePropertiesMap;
 	char outputStr[512];
 
-	auto openFile(const std::wstring &wid_str) {
+	auto getFileName(const std::wstring &wid_str) {
 		std::wstring last = wid_str.substr(wid_str.find_last_of(L'\\') + 1, wid_str.length());
 		const wchar_t* w_filename = last.c_str();
-		Platform::String ^nFilename = ref new Platform::String(w_filename);
-		auto storageFile = AWait(g_root->GetFileAsync(nFilename));
+		return ref new Platform::String(w_filename);
+	}
+
+	auto openFile(const std::wstring &filename) {
+		auto storageFile = AWait(g_root->GetFileAsync(getFileName(filename)));
+		return storageFile;
+	}
+	auto openWriteFile(const std::wstring &filename) {
+		auto nFilename = getFileName(filename);
+		Windows::Storage::StorageFile ^storageFile;
+		try {
+			storageFile = AWait(g_root->GetFileAsync(getFileName(filename)));
+		}
+		catch (Platform::Exception ^e) {
+			storageFile = AWait(g_root->CreateFileAsync(nFilename));
+		}
 		return storageFile;
 	}
 
@@ -167,26 +186,36 @@ extern "C" {
 		setlocale(LC_ALL, "chs");
 		mbstowcs_s(&convertedChars, wcstring, newsize, filename, _TRUNCATE);
 		std::wstring wid_str = std::wstring(wcstring);
-		try {
-			auto storageFile = openFile(wid_str);
-			FILE *result = reinterpret_cast<FILE*>(hasher(filename));
+		FILE *result = reinterpret_cast<FILE*>(hasher(filename));
+		switch (*mode) {
+		case 'r':
+			try {
+				auto storageFile = openFile(wid_str);
 
-			auto buffer = AWait(Windows::Storage::FileIO::ReadBufferAsync(storageFile));
-			auto dataReader = Windows::Storage::Streams::DataReader::FromBuffer(buffer);
-			auto length = dataReader->UnconsumedBufferLength;
-			auto bytes = ref new Platform::Array<uint8>(length);
-			dataReader->ReadBytes(bytes);
+				auto buffer = AWait(Windows::Storage::FileIO::ReadBufferAsync(storageFile));
+				auto dataReader = Windows::Storage::Streams::DataReader::FromBuffer(buffer);
+				auto length = dataReader->UnconsumedBufferLength;
+				auto bytes = ref new Platform::Array<uint8>(length);
+				dataReader->ReadBytes(bytes);
 
-			uint8 *buf = new uint8[length];
-			std::copy(bytes->begin(), bytes->end(), buf);
-			auto ss = new std::istringstream((char*)buf);
+				uint8 *buf = new uint8[length];
+				std::copy(bytes->begin(), bytes->end(), buf);
+				auto ss = new std::istringstream((char*)buf);
 
-			filePropertiesMap[result] = { wid_str,length,0,ss,buf };
-			return result;
+				filePropertiesMap[result] = { wid_str,length,0,ss,buf };
+				return result;
+			}
+			catch (Platform::Exception^ e) {}
+			break;
+		case 'w':
+			try {
+				filePropertiesMap[result] = { wid_str,0,0,nullptr,nullptr };
+				return result;
+			}
+			catch (Platform::Exception^ e) {}
+			break;
 		}
-		catch (Platform::Exception^ e){
-			return nullptr;
-		}
+		return nullptr;
 	}
 	long ftell_uwp(FILE *fp) {
 		EmulatedFileProperties &p = filePropertiesMap[fp];
@@ -245,7 +274,7 @@ extern "C" {
 		auto length = size * nitems;
 		EmulatedFileProperties &p = filePropertiesMap[fp];
 		if (&p != nullptr) {
-			auto storageFile = openFile(p.filename);
+			auto storageFile = openWriteFile(p.filename);
 			auto bytes = ref new Platform::Array<uint8>(length);
 			std::copy((uint8*)ptr, (uint8*)ptr + length, bytes->begin());
 			AWait(Windows::Storage::FileIO::WriteBytesAsync(storageFile, bytes));

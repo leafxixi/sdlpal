@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="ac4bf6d5-bbea-4be4-a7d8-4a404f7ee2af" Publisher="CN=LouYihua" Version="2.0.3.0" />
+  <Identity Name="ac4bf6d5-bbea-4be4-a7d8-4a404f7ee2af" Publisher="CN=LouYihua" Version="2.0.4.0" />
   <mp:PhoneIdentity PhoneProductId="ac4bf6d5-bbea-4be4-a7d8-4a404f7ee2af" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>SDLPal</DisplayName>
@@ -20,6 +20,7 @@
         <uap:DefaultTile Wide310x150Logo="Assets\WideLogo.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />
+            <uap:ShowOn Tile="wide310x150Logo" />
           </uap:ShowNameOnTiles>
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="black" />
@@ -27,23 +28,6 @@
           <uap:Rotation Preference="landscape" />
         </uap:InitialRotationPreference>
       </uap:VisualElements>
-      <Extensions>
-        <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="pal">
-            <uap:SupportedFileTypes>
-              <uap:FileType>.mkf</uap:FileType>
-              <uap:FileType>.dat</uap:FileType>
-              <uap:FileType>.msg</uap:FileType>
-              <uap:FileType>.cfg</uap:FileType>
-              <uap:FileType>.asc</uap:FileType>
-              <uap:FileType>.mp3</uap:FileType>
-              <uap:FileType>.ogg</uap:FileType>
-              <uap:FileType>.rpg</uap:FileType>
-              <uap:FileType>.bmp</uap:FileType>
-            </uap:SupportedFileTypes>
-          </uap:FileTypeAssociation>
-        </uap:Extension>
-      </Extensions>
     </Application>
   </Applications>
   <Capabilities>

@@ -116,6 +116,11 @@ UTIL_SavePath(
 );
 
 BOOL
+UTIL_IsMobile(
+	VOID
+);
+
+BOOL
 UTIL_GetScreenSize(
    DWORD *pdwScreenWidth,
    DWORD *pdwScreenHeight
