@@ -685,7 +685,7 @@ PAL_JoystickEventFilter(
 #endif
 }
 
-#if PAL_HAS_TOUCH
+//#if PAL_HAS_TOUCH
 
 #define  TOUCH_NONE     0
 #define    TOUCH_UP      1
@@ -851,7 +851,7 @@ PAL_UnsetTouchAction(
       break;
    }
 }
-#endif
+//#endif
 
 static VOID
 PAL_TouchEventFilter(
@@ -872,7 +872,7 @@ PAL_TouchEventFilter(
 
 --*/
 {
-#if PAL_HAS_TOUCH
+   if(PAL_HAS_TOUCH){
    static SDL_TouchID finger1 = -1, finger2 = -1;
    static int prev_touch1 = TOUCH_NONE;
    static int prev_touch2 = TOUCH_NONE;
@@ -936,7 +936,7 @@ PAL_TouchEventFilter(
       }
       break;
    }
-#endif
+   }
 }
 
 static int SDLCALL

@@ -26,14 +26,15 @@ SDL_Surface              *gpScreen           = NULL;
 
 // Backup screen buffer
 SDL_Surface              *gpScreenBak        = NULL;
+BOOL outputHash;
 
 #if SDL_VERSION_ATLEAST(2,0,0)
 SDL_Window               *gpWindow           = NULL;
 static SDL_Renderer      *gpRenderer         = NULL;
 static SDL_Texture       *gpTexture          = NULL;
-# if PAL_HAS_TOUCH
+//# if PAL_HAS_TOUCH
 static SDL_Texture       *gpTouchOverlay     = NULL;
-# endif
+//# endif
 static SDL_Rect          *gpRenderRect       = NULL;
 static SDL_Rect           gRenderRect;
 #endif
@@ -78,9 +79,9 @@ VIDEO_Startup(
 --*/
 {
 #if SDL_VERSION_ATLEAST(2,0,0)
-# if PAL_HAS_TOUCH
+//#if PAL_HAS_TOUCH
    SDL_Surface *overlay;
-# endif
+//#endif
    //
    // Before we can render anything, we need a window and a renderer.
    //
@@ -159,7 +160,7 @@ VIDEO_Startup(
    //
    // Create texture for overlay.
    //
-#if PAL_HAS_TOUCH
+   if(PAL_HAS_TOUCH){
    overlay = SDL_LoadBMP(va("%s%s", PAL_PREFIX, "overlay.bmp"));
    if (overlay != NULL)
    {
@@ -168,7 +169,7 @@ VIDEO_Startup(
       SDL_SetTextureAlphaMod(gpTouchOverlay, 120);
       SDL_FreeSurface(overlay);
    }
-#endif
+   }
 
    //
    // Check whether to keep the aspect ratio
@@ -190,9 +191,9 @@ VIDEO_Startup(
 		   gRenderRect.w = w;
 		   gRenderRect.h = h;
 		   gpRenderRect = &gRenderRect;
-# if PAL_HAS_TOUCH
+		   if( PAL_HAS_TOUCH ){
 		   PAL_SetTouchBounds(gConfig.dwScreenWidth, gConfig.dwScreenHeight, gRenderRect);
-# endif
+		   }
 	   }
    }
 #else
@@ -296,13 +297,13 @@ VIDEO_Shutdown(
 
 #if SDL_VERSION_ATLEAST(2,0,0)
 
-# if PAL_HAS_TOUCH
+   if (PAL_HAS_TOUCH) {
    if (gpTouchOverlay)
    {
       SDL_DestroyTexture(gpTouchOverlay);
    }
    gpTouchOverlay = NULL;
-# endif
+   }
 
    if (gpTexture)
    {
@@ -339,13 +340,19 @@ VIDEO_RenderCopy(
 )
 {
    SDL_UpdateTexture(gpTexture, NULL, gpScreenReal->pixels, gpScreenReal->pitch);
+   if (outputHash) {
+	   char output[512];
+	   char hash[512];
+	   UTIL_hash(hash, gpScreenReal->pixels, gpScreen->pitch * gpScreen->h);
+	   sprintf(output, "hash:%s\n", hash);
+	   OutputDebugStringA(output);
+   }
    SDL_RenderCopy(gpRenderer, gpTexture, NULL, gpRenderRect);
-#if PAL_HAS_TOUCH
+   if(PAL_HAS_TOUCH)
    if (gpTouchOverlay)
    {
       SDL_RenderCopy(gpRenderer, gpTouchOverlay, NULL, gpRenderRect);
    }
-#endif
    SDL_RenderPresent(gpRenderer);
 }
 #endif
