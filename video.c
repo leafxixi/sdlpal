@@ -26,7 +26,6 @@ SDL_Surface              *gpScreen           = NULL;
 
 // Backup screen buffer
 SDL_Surface              *gpScreenBak        = NULL;
-BOOL outputHash;
 
 #if SDL_VERSION_ATLEAST(2,0,0)
 SDL_Window               *gpWindow           = NULL;
