@@ -33,6 +33,8 @@ extern SDL_Surface *gpScreen;
 extern SDL_Surface *gpScreenBak;
 extern volatile BOOL g_bRenderPaused;
 
+extern BOOL outputHash;
+
 INT
 VIDEO_Startup(
    VOID

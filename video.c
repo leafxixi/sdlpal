@@ -26,6 +26,7 @@ SDL_Surface              *gpScreen           = NULL;
 
 // Backup screen buffer
 SDL_Surface              *gpScreenBak        = NULL;
+BOOL outputHash = FALSE;
 
 #if SDL_VERSION_ATLEAST(2,0,0)
 SDL_Window               *gpWindow           = NULL;
@@ -340,6 +341,13 @@ VIDEO_RenderCopy(
 {
    SDL_UpdateTexture(gpTexture, NULL, gpScreenReal->pixels, gpScreenReal->pitch);
    SDL_RenderCopy(gpRenderer, gpTexture, NULL, gpRenderRect);
+   if (outputHash) {
+	   char output[512];
+	   char hash[512];
+	   UTIL_hash(hash, gpScreenReal->pixels, gpScreen->pitch * gpScreen->h);
+	   sprintf(output, "hash:%s\n", hash);
+	   OutputDebugStringA(output);
+}
 #if PAL_HAS_TOUCH
    if (gpTouchOverlay)
    {

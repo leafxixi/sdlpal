@@ -125,6 +125,7 @@ UTIL_GetScreenSize(
    DWORD *pdwScreenWidth,
    DWORD *pdwScreenHeight
 );
+char *UTIL_hash(char *output, unsigned char *buf, long length);
 
 #endif
 

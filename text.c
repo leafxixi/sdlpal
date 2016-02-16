@@ -1215,7 +1215,10 @@ PAL_ShowDialogText(
          //
          pos = PAL_XY(PAL_X(pos) + 8 + ((len & 1) << 2), PAL_Y(pos) + 10);
          PAL_DrawText(lpszText, pos, 0, FALSE, FALSE, FALSE);
-         VIDEO_UpdateScreen(&rect);
+		 outputHash = TRUE;
+		 //Sleep(300);
+		 VIDEO_UpdateScreen(&rect);
+		 outputHash = FALSE;
 
          PAL_DialogWaitForKey();
 

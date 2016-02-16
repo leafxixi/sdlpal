@@ -111,6 +111,14 @@ BOOL UTIL_IsMobile(VOID) {
 	return qualifiedValues->HasKey("DeviceFamily") && Mobile->Equals(qualifiedValues->Lookup(DeviceFamily));
 }
 extern "C"
+char *UTIL_hash(char *output, uint8 *buf, long length) {
+	long long hash = 0;
+	for (int i = 0; i < length; i++)
+		hash += buf[i];
+	sprintf(output,"%lld", hash);
+	return output;
+}
+extern "C"
 BOOL UTIL_GetScreenSize(DWORD *pdwScreenWidth, DWORD *pdwScreenHeight)
 {
 	DXGI_OUTPUT_DESC desc;
