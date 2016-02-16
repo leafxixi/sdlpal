@@ -340,13 +340,6 @@ VIDEO_RenderCopy(
 )
 {
    SDL_UpdateTexture(gpTexture, NULL, gpScreenReal->pixels, gpScreenReal->pitch);
-   if (outputHash) {
-	   char output[512];
-	   char hash[512];
-	   UTIL_hash(hash, gpScreenReal->pixels, gpScreen->pitch * gpScreen->h);
-	   sprintf(output, "hash:%s\n", hash);
-	   OutputDebugStringA(output);
-   }
    SDL_RenderCopy(gpRenderer, gpTexture, NULL, gpRenderRect);
    if(PAL_HAS_TOUCH)
    if (gpTouchOverlay)
