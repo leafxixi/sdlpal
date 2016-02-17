@@ -344,7 +344,11 @@ VIDEO_RenderCopy(
    if (outputHash) {
 	   char bitmap[310000];
 	   SDL_RWops *rw = SDL_RWFromMem(bitmap, sizeof(bitmap));
-	   SDL_SaveBMP(gpScreenReal, va("%s%s",PAL_PREFIX, "screen.bmp"));
+	   SDL_SaveBMP_RW(gpScreenReal, rw, 1);
+	   FILE *fp = fopen("scrnshot.bmp", "wb");
+	   fwrite(bitmap, sizeof(bitmap), 1, fp);
+	   fclose(fp);
+	   UTIL_ScreenShot();
 	   char output[512];
 	   char hash[512];
 	   UTIL_hash(hash, gpScreenReal->pixels, gpScreen->pitch * gpScreen->h);
