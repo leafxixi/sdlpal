@@ -87,6 +87,7 @@ LPCSTR UTIL_BasePath(VOID)
 		{
 			auto path = Windows::ApplicationModel::Package::Current->InstalledLocation->Path+"\\Assets\\Data\\";
 			ConvertString(path, g_basepath);
+			g_savepath = g_basepath;
 		}
 	}
 	return g_basepath.c_str();
@@ -112,10 +113,18 @@ BOOL UTIL_IsMobile(VOID) {
 }
 extern "C"
 char *UTIL_hash(char *output, uint8 *buf, long length) {
-	long long hash = 0;
-	for (int i = 0; i < length; i++)
-		hash += buf[i];
-	sprintf(output,"%lld", hash);
+	auto localBuf = ref new Platform::Array<uint8>(length);
+	std::copy(buf, buf + length, localBuf->begin());
+	auto strAlgName = Windows::Security::Cryptography::Core::HashAlgorithmNames::Md5;
+	auto objAlgProv = Windows::Security::Cryptography::Core::HashAlgorithmProvider::OpenAlgorithm(strAlgName);
+	auto objHash = objAlgProv->CreateHash();
+	auto buffer = Windows::Security::Cryptography::CryptographicBuffer::CreateFromByteArray(localBuf);
+	objHash->Append(buffer);
+	auto hashBuf = objHash->GetValueAndReset();
+	auto hashStr = Windows::Security::Cryptography::CryptographicBuffer::EncodeToBase64String(hashBuf);
+	std::string result;
+	ConvertString(hashStr, result);
+	sprintf(output,"%s", result.c_str());
 	return output;
 }
 extern "C"

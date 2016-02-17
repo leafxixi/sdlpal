@@ -93,7 +93,7 @@ VIDEO_Startup(
       return -1;
    }
 
-   gpRenderer = SDL_CreateRenderer(gpWindow, -1, SDL_RENDERER_ACCELERATED);
+   gpRenderer = SDL_CreateRenderer(gpWindow, -1, SDL_RENDERER_ACCELERATED|SDL_RENDERER_PRESENTVSYNC);
 
    if (gpRenderer == NULL)
    {
@@ -342,6 +342,9 @@ VIDEO_RenderCopy(
    SDL_UpdateTexture(gpTexture, NULL, gpScreenReal->pixels, gpScreenReal->pitch);
    SDL_RenderCopy(gpRenderer, gpTexture, NULL, gpRenderRect);
    if (outputHash) {
+	   char bitmap[310000];
+	   SDL_RWops *rw = SDL_RWFromMem(bitmap, sizeof(bitmap));
+	   SDL_SaveBMP(gpScreenReal, va("%s%s",PAL_PREFIX, "screen.bmp"));
 	   char output[512];
 	   char hash[512];
 	   UTIL_hash(hash, gpScreenReal->pixels, gpScreen->pitch * gpScreen->h);
