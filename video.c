@@ -92,7 +92,7 @@ VIDEO_Startup(
       return -1;
    }
 
-   gpRenderer = SDL_CreateRenderer(gpWindow, -1, SDL_RENDERER_ACCELERATED);
+   gpRenderer = SDL_CreateRenderer(gpWindow, -1, SDL_RENDERER_ACCELERATED|SDL_RENDERER_PRESENTVSYNC);
 
    if (gpRenderer == NULL)
    {
@@ -160,7 +160,15 @@ VIDEO_Startup(
    // Create texture for overlay.
    //
    if(PAL_HAS_TOUCH){
-   overlay = SDL_LoadBMP(va("%s%s", PAL_PREFIX, "overlay.bmp"));
+	   FILE *fp = fopen(va("%s%s", PAL_PREFIX, "overlay.bmp"), "rb");
+	   fseek(fp, 0, SEEK_END);
+	   long length = ftell(fp);
+	   uint8_t *buf = malloc(length);
+	   fseek(fp, 0, SEEK_SET);
+	   fread(buf, length, 1, fp);
+	   SDL_RWops *rw = SDL_RWFromMem(buf, length);
+	   overlay = SDL_LoadBMP_RW(rw,1);
+	   free(buf);
    if (overlay != NULL)
    {
       SDL_SetColorKey(overlay, SDL_RLEACCEL, SDL_MapRGB(overlay->format, 255, 0, 255));
