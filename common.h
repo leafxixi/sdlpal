@@ -23,7 +23,7 @@
 #define _COMMON_H
 
 #define PAL_CLASSIC        1
-#define __CARDBOARD__      1
+//#define __CARDBOARD__      1
 
 #ifdef __cplusplus
 extern "C"
