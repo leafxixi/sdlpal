@@ -215,7 +215,7 @@ extern "C"
 
 #define PAL_PREFIX            "/mnt/sdcard/sdlpal/"
 #define PAL_SAVE_PREFIX       "/mnt/sdcard/sdlpal/"
-#define PAL_HAS_TOUCH         1
+#define PAL_HAS_TOUCH         0
 #define PAL_DEFAULT_WINDOW_WIDTH   320
 #define PAL_DEFAULT_WINDOW_HEIGHT  200
 
@@ -294,10 +294,10 @@ extern "C"
 #endif
 
 #ifndef PAL_HAS_MP3
-# define PAL_HAS_MP3          1   /* Try always enable MP3. If compilation/run failed, please change this value to 0. */
+# define PAL_HAS_MP3          0   /* Try always enable MP3. If compilation/run failed, please change this value to 0. */
 #endif
 #ifndef PAL_HAS_OGG
-# define PAL_HAS_OGG          1   /* Try always enable OGG. If compilation/run failed, please change this value to 0. */
+# define PAL_HAS_OGG          0   /* Try always enable OGG. If compilation/run failed, please change this value to 0. */
 #endif
 
 #ifndef SDL_INIT_CDROM

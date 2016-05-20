@@ -493,6 +493,7 @@ PAL_SplashScreen(
    PAL_FadeOut(1);
 }
 
+extern void Android_JNI_ShowTextInput(SDL_Rect *inputRect);
 int
 main(
    int      argc,
@@ -521,17 +522,17 @@ main(
 		return exit_code != 1 ? exit_code : 0;
 #endif
 
-#if defined(__APPLE__) && !defined(__IOS__)
-   char *p = strstr(argv[0], "/Pal.app/");
-
-   if (p != NULL)
-   {
-      char buf[4096];
-      strcpy(buf, argv[0]);
-      buf[p - argv[0]] = '\0';
-      chdir(buf);
-   }
-#endif
+//#if defined(__APPLE__) && !defined(__IOS__)
+//   char *p = strstr(argv[0], "/Pal.app/");
+//
+//   if (p != NULL)
+//   {
+//      char buf[4096];
+//      strcpy(buf, argv[0]);
+//      buf[p - argv[0]] = '\0';
+//      chdir(buf);
+//   }
+//#endif
 
    UTIL_OpenLog();
 
@@ -555,6 +556,12 @@ main(
    if (gConfig.fLaunchSetting)
 	   return 0;
 
+//   SDL_Rect rect;
+//   rect.x=0;
+//   rect.y=0;
+//   rect.w=320;
+//   rect.h=200;
+//   Android_JNI_ShowTextInput(&rect);
    //
    // Initialize everything
    //
