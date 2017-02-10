@@ -266,16 +266,7 @@ INT_PTR CALLBACK LauncherDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPAR
 extern "C" int UTIL_Platform_Init(int argc, char* argv[])
 {
 	g_hInstance = GetModuleHandle(nullptr);
-	g_wLanguage = GetThreadUILanguage();
-	if (PRIMARYLANGID(g_wLanguage) == LANG_CHINESE)
-	{
-		if (SUBLANGID(g_wLanguage) == SUBLANG_CHINESE_SIMPLIFIED || SUBLANGID(g_wLanguage) == SUBLANG_CHINESE_SINGAPORE)
-			g_wLanguage = MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED);
-		else
-			g_wLanguage = MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL);
-	}
-	else
-		g_wLanguage = MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL);
+	g_wLanguage = MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL);
 	auto dlg = (LPCDLGTEMPLATE)LockResource(LoadResource(g_hInstance, FindResourceEx(g_hInstance, RT_DIALOG, MAKEINTRESOURCE(IDD_LAUNCHER), g_wLanguage)));
 	if (gConfig.fLaunchSetting && DialogBoxIndirect(GetModuleHandle(nullptr), dlg, nullptr, LauncherDialogProc) != IDOK)
 		return -1;

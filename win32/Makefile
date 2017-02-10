@@ -8,14 +8,13 @@ CFILES = $(wildcard ../adplug/*.c) $(wildcard ../libmad/*.c) $(wildcard ../libog
 CPPFILES = $(wildcard ../adplug/*.cpp) $(wildcard ../*.cpp) $(wildcard ./*.cpp)
 OBJFILES = $(CFILES:.c=.o) $(CPPFILES:.cpp=.o)
 
-CCFLAGS = `sdl2-config --cflags` -msse -Wall -O2 -fno-strict-aliasing -I../ -I../liboggvorbis/include -I../liboggvorbis/src -DPAL_HAS_PLATFORM_SPECIFIC_UTILS
+CCFLAGS = `sdl2-config --cflags` -msse -g -Wall -O2 -fno-strict-aliasing -I../ -I../liboggvorbis/include -I../liboggvorbis/src -DPAL_HAS_PLATFORM_SPECIFIC_UTILS
 CXXFLAGS = $(CCFLAGS) -std=c++11 
 CFLAGS = $(CCFLAGS) -std=gnu99 
-LDFLAGS = `sdl2-config --libs` -lm -lwinmm -lole32 -loleaut32 -limm32 -luuid -ldxguid -lversion -static -static-libgcc -static-libstdc++
+LDFLAGS = `sdl2-config --libs` -lm -lwinmm -lole32 -loleaut32 -limm32 -lcomctl32 -luuid -ldxguid -lversion -static -static-libgcc -static-libstdc++
 
 $(TARGET): $(OBJFILES)
 	$(HOST)g++ $(OBJFILES) -o $(TARGET) $(LDFLAGS)
-	$(HOST)strip $(TARGET)
 
 %.o: %.c
 	$(HOST)gcc $(CFLAGS) -c $< -o $@
