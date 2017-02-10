@@ -236,6 +236,8 @@ android/so
 *.keystore
 resources
 
+secrets.yml
+
 sdlpal
 data
 

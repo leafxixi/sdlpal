@@ -1,0 +1,17 @@
+build:
+  image: teaci/msys32
+  shell: mingw32
+  pull: true
+  commands:
+    - cd unix
+    - mv Makefile.mingw Makefile
+    - pacman -S --needed --noconfirm --noprogressbar mingw-w64-i686-SDL2 mingw-w64-i686-fltk
+    - make
+publish:
+  github_release:
+    api_key: $$GITHUB_TOKEN
+    files:
+      - unix/sdlpal.exe
+    checksum:
+      - md5
+      - sha1
