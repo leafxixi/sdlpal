@@ -5,7 +5,7 @@ TARGET = sdlpal.exe
 HOST =
 
 CFILES = $(wildcard ../adplug/*.c) $(wildcard ../libmad/*.c) $(wildcard ../liboggvorbis/src/*.c) $(wildcard ../*.c) ../native_midi/native_midi_win32.c ../native_midi/native_midi_common.c
-CPPFILES = $(wildcard ../adplug/*.cpp) $(wildcard ../*.cpp) $(wildcard ./*.cpp)
+CPPFILES = $(wildcard ../adplug/*.cpp) $(wildcard ../*.cpp) $(wildcard ./*.cpp) 
 OBJFILES = $(CFILES:.c=.o) $(CPPFILES:.cpp=.o)
 
 CCFLAGS = `sdl2-config --cflags` -msse -g -Wall -O2 -fno-strict-aliasing -I../ -I../liboggvorbis/include -I../liboggvorbis/src -DPAL_HAS_PLATFORM_SPECIFIC_UTILS
