@@ -64,7 +64,7 @@ extern "C"
 
 #endif
 
-#if !defined(__cplusplus)
+#if !(defined(__MINGW32__) || defined(__EMSCRIPTEN__)) || !defined(__cplusplus)
 #ifndef max
 #define max(a, b)    (((a) > (b)) ? (a) : (b))
 #endif
