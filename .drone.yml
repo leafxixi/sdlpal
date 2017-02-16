@@ -1,0 +1,16 @@
+build:
+  image: teaci/msys32
+  shell: mingw32
+  pull: true
+  commands:
+    - cd win32
+    - pacman -S --needed --noconfirm --noprogressbar mingw-w64-i686-SDL2
+    - make
+publish:
+  github_release:
+    api_key: $$GITHUB_TOKEN
+    files:
+      - win32/sdlpal.exe
+    checksum:
+      - md5
+      - sha1

@@ -64,15 +64,8 @@ extern "C"
 
 #endif
 
-#if !(defined(__MINGW32__) || defined(__EMSCRIPTEN__)) || !defined(__cplusplus)
-#ifndef max
-#define max(a, b)    (((a) > (b)) ? (a) : (b))
-#endif
-
-#ifndef min
-#define min(a, b)    (((a) < (b)) ? (a) : (b))
-#endif
-#endif
+#define max fmax
+#define min fmin
 
 /* This is need when compiled with SDL 1.2 */
 #ifndef SDL_FORCE_INLINE
