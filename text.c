@@ -25,6 +25,7 @@
 //
 
 #include "main.h"
+#include <locale.h>
 
 #define   FONT_COLOR_DEFAULT        0x4F
 #define   FONT_COLOR_YELLOW         0x2D
@@ -498,6 +499,10 @@ PAL_InitText(
 
 --*/
 {
+#ifdef __APPLE__
+    setlocale(LC_ALL,"en_US");
+#endif
+
    if (gConfig.pszMsgFile)
    {
 	   //

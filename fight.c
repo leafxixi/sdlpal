@@ -4832,7 +4832,7 @@ PAL_BattleStealFromEnemy(
 
          if (c > 0)
          {
-            swprintf(s, 256, L"%s %d %s", PAL_GetWord(34), c, PAL_GetWord(10));
+            swprintf(s, 256, L"%ls %d %ls", PAL_GetWord(34), c, PAL_GetWord(10));
          }
       }
       else
