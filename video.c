@@ -20,6 +20,10 @@
 //
 
 #include "main.h"
+// needed by iOS/emscripten for gettimeofday, dont remove it
+#if !defined(__WIN32__) && !defined(__WINRT__)
+#include <sys/time.h>
+#endif
 
 // Screen buffer
 SDL_Surface              *gpScreen           = NULL;
