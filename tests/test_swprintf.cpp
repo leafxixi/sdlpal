@@ -17,5 +17,5 @@ TEST(sdlpal, PALswprintf2) {
 
 TEST(sdlpal, PALswprintf3) {
     WCHAR test_buf[256];
-    EXPECT_EQ(0, wcsncmp( L"测试 3",  test_buf, PAL_swprintf(test_buf, sizeof(test_buf)/sizeof(WCHAR), L"%ls%ls %c", L"测", L"试", '3')));
+    EXPECT_EQ(0, wcsncmp( L"测试 3",  test_buf, PAL_swprintf(test_buf, sizeof(test_buf)/sizeof(WCHAR), L"%ls%ls %c", L"测", L"试", '2')));
 }
