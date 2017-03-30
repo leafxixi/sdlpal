@@ -1,10 +1,121 @@
-dist: trusty
-language: c
-script:
- - make
- - make clean
- - make check
-before_install:
- - sudo apt-get update -qq
- - sudo apt-get install -qq libsdl2-dev libfltk1.3-dev
- - cd unix
+language: android
+
+before_script:
+  - mkdir deploy
+
+matrix:
+    fast_finish: true
+    include:
+      - os: linux
+        env: TARGET=Linux
+        dist: trusty
+        language: c
+        addons:
+          apt:
+            packages:
+            - libsdl2-dev
+            - libfltk1.3-dev
+        script:
+          - cd unix
+          - make
+          - cp sdlpal ../deploy
+          - make clean
+          - make check
+          - cd ..
+
+      - os: linux
+        env: TARGET=MinGW32
+        dist: trusty
+        language: c
+        addons:
+          apt:
+            packages:
+            - binutils-mingw-w64-i686 
+            - gcc-mingw-w64-i686 
+            - g++-mingw-w64-i686 
+        before_install:
+          - cd SDL2
+          - wget http://libsdl.org/release/SDL2-devel-2.0.5-mingw.tar.gz
+          - tar xvf SDL2-devel-2.0.5-mingw.tar.gz
+          - mv SDL2-2.0.5/* .
+          - sed -i "s@/usr/local/cross-tools@$(pwd)@g" i686-w64-mingw32/bin/sdl2-config
+          - sed -i "/#include <intrin.h>/d" i686-w64-mingw32/include/SDL2/SDL_cpuinfo.h #dirty hack
+          - export PATH=$PATH:$(pwd)/i686-w64-mingw32/bin
+          - cd ..
+        script:
+          - cd win32
+          - make HOST=i686-w64-mingw32-
+          - i686-w64-mingw32-strip sdlpal.exe
+          - cp sdlpal.exe ../deploy
+          - cd ..
+
+      - os: linux
+        env: TARGET=Android NDK_VERSION=r10e
+        dist: precise
+        language: android
+        android:
+          components:
+            - build-tools-22.0.1
+            - android-22
+        before_install:
+          - wget http://dl.google.com/android/ndk/android-ndk-$NDK_VERSION-linux-x86_64.bin
+          - chmod +x android-ndk-$NDK_VERSION-linux-x86_64.bin
+          - ./android-ndk-$NDK_VERSION-linux-x86_64.bin | egrep -v ^Extracting
+          - export ANDROID_NDK_HOME=`pwd`/android-ndk-$NDK_VERSION
+          - export PATH=${PATH}:${ANDROID_NDK_HOME}
+          - cd SDL2
+          - wget https://www.libsdl.org/release/SDL2-2.0.5.zip
+          - unzip SDL2-2.0.5.zip
+          - mv SDL2-2.0.5/* .
+          - cd ..
+        script:
+          - cd android/jni
+          - ndk-build
+          - cd ..
+          - sed -i 's/android-24/android-22/g' project.properties
+          - ant debug
+          - mv bin/SDLActivity-debug.apk ../deploy/sdlpal-debug.apk
+          - cd ..
+
+      - os: osx
+        env: TARGET=iOS
+        language: c
+        before_install:
+          - cd SDL2
+          - wget https://www.libsdl.org/release/SDL2-2.0.5.zip
+          - unzip SDL2-2.0.5.zip
+          - mv SDL2-2.0.5/* .
+          - cd ..
+        script:
+          - cd ios/SDLPal
+          - xcodebuild ONLY_ACTIVE_ARCH=NO CODE_SIGNING_ALLOWED="NO"
+          - mkdir -p Payload
+          - mv build/Release-iphoneos/SDLPal.app Payload
+          - zip ../../deploy/sdlpal-impactor.ipa -r Payload
+          - cd ../..
+
+      - os: osx
+        env: TARGET=macOS
+        language: c
+        before_install:
+          - wget https://www.libsdl.org/release/SDL2-2.0.5.dmg
+          - hdiutil attach SDL2-2.0.5.dmg;
+          - sudo cp -a /Volumes/SDL2/SDL2.framework /Library/Frameworks/
+        script:
+          - cd macos
+          - xcodebuild
+          - hdiutil create -srcfolder build/Release/Pal.app -volname "SDLPal" ../deploy/sdlpal-macos.dmg
+          - #xcodebuild test -scheme PalTests #disabled since always fail in travis-ci
+          - cd ..
+
+deploy:
+  provider: releases
+  api_key:
+    secure: gchW8SJJO321Zb/rsZjr+/yPJGf1PJRP/fpVGmgw4Iy6+lqb/oDk7EhtGZj+9Nz/iAliIfhnZk1smV4D32rkqENDd8KiKS0k1Kg1stgmawaYULA7uHzGAbQaaeTdT53dZOp2OhcX5R/h3CBXDAw7kFS+Dmr2bstBwHYEwSxuw/EGXsWAnuAmnla/1Rfbs55At6iwVKWbKYT3QqYVMUs7kpY3pRj+ej3fDeNZen6EcZWtnBaIo56boG64hXSGoE31FY10xIj4LVxy3xKcrld/3n09dfO3ChLgHkhhRr4HyvNz/Dntre/Fwhmc1PUsCoUc8reMQyICXFShj/LqblPoWF5kaQYyLQAR3kTExhAzQyTBKufy0EUD79QGOg3KIgHrm6gQyLGvK/MVWxhsd+CTysKI6ZZ1pzo3fXMnz6LGBxi1ROsp0pc9LoJ5cVaf03jy3ELDN6W3GeZZO7styDHNUEV2Q4c6Bopt/HV+b5+mR1bVf9bRBs+0hYGRGxujZch32isUqazEXG4LtQyGzOfs5iQh5+suVvPSk3hB/lmfeJM06SyR9hbHOBGp5r0GJHvOvq9KT+yG4DvALPJmUzt1uGz5ZB66gP8ab+ou3FA9Hny/UjIOLj/4PhOaccgNfJgkpbdwWbV2bNnLsy/jQTgUG/i4XU8uMHa4G0Bsopi0dcs=
+  file_glob: true
+  file: deploy/*
+  skip_cleanup: true
+  overwrite: true
+  on:
+      all_branches: true
+      tags: true
