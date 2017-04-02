@@ -10,7 +10,7 @@ GTEST_DIR = ../3rd/googletest/googletest
 
 CFILES = $(wildcard ../adplug/*.c) $(wildcard ../libmad/*.c) $(wildcard ../liboggvorbis/src/*.c) $(wildcard ../*.c) ../native_midi/native_midi_win32.c ../native_midi/native_midi_common.c
 CPPFILES = $(wildcard ../adplug/*.cpp) $(wildcard ../*.cpp) $(wildcard ./*.cpp)
-RCFILES = $(wildcard ./sdlpal.rc)
+RCFILES = $(wildcard ./*.rc)
 OBJFILES = $(CFILES:.c=.o) $(CPPFILES:.cpp=.o) $(RCFILES:.rc=.o)
 TEST_CPPFILES = $(wildcard ../tests/*.cpp)
 TEST_OBJFILES = $(TEST_CPPFILES:.cpp=.o)
