@@ -149,6 +149,7 @@
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\SDL2\Lib</AdditionalLibraryDirectories>
     </Link>
     <Bscmake />
   </ItemDefinitionGroup>
@@ -177,6 +178,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\SDL2\Lib</AdditionalLibraryDirectories>
     </Link>
     <Bscmake />
   </ItemDefinitionGroup>
@@ -209,6 +211,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>..\SDL2\Lib</AdditionalLibraryDirectories>
     </Link>
     <Bscmake />
   </ItemDefinitionGroup>
@@ -239,8 +242,7 @@
       <AdditionalDependencies>winmm.lib;sdl2.lib;sdl2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\SDL2\Lib</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
     </Link>
     <Bscmake />
@@ -271,6 +273,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>..\SDL2\Lib</AdditionalLibraryDirectories>
     </Link>
     <Bscmake />
   </ItemDefinitionGroup>
@@ -300,8 +303,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\SDL2\Lib</AdditionalLibraryDirectories>
     </Link>
     <Bscmake />
   </ItemDefinitionGroup>
