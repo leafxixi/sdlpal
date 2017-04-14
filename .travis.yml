@@ -3,6 +3,18 @@ language: android
 before_script:
   - mkdir deploy
 
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+env:
+  global:
+    - SDL_VERSION=2.0.5
+
 matrix:
     fast_finish: true
     include:
@@ -35,9 +47,9 @@ matrix:
             - g++-mingw-w64-i686 
         before_install:
           - cd SDL2
-          - wget http://libsdl.org/release/SDL2-devel-2.0.5-mingw.tar.gz
-          - tar xvf SDL2-devel-2.0.5-mingw.tar.gz
-          - mv SDL2-2.0.5/* .
+          - wget http://libsdl.org/release/SDL2-devel-$SDL_VERSION-mingw.tar.gz
+          - tar xvf SDL2-devel-$SDL_VERSION-mingw.tar.gz
+          - mv SDL2-$SDL_VERSION/* .
           - sed -i "s@/usr/local/cross-tools@$(pwd)@g" i686-w64-mingw32/bin/sdl2-config
           - sed -i "/#include <intrin.h>/d" i686-w64-mingw32/include/SDL2/SDL_cpuinfo.h #dirty hack
           - export PATH=$PATH:$(pwd)/i686-w64-mingw32/bin
@@ -50,13 +62,13 @@ matrix:
           - cd ..
 
       - os: linux
-        env: TARGET=Android NDK_VERSION=r13b TERM=dumb
+        env: TARGET=Android NDK_VERSION=r14b TERM=dumb
         android:
           components:
             - platform-tools
             - tools
             - build-tools-25.0.2
-            - android-24
+            - android-25
         jdk: oraclejdk8
         before_install:
           - wget http://dl.google.com/android/repository/android-ndk-$NDK_VERSION-linux-x86_64.zip
@@ -64,12 +76,13 @@ matrix:
           - export ANDROID_NDK_HOME=`pwd`/android-ndk-$NDK_VERSION
           - export PATH=${PATH}:${ANDROID_NDK_HOME}
           - cd SDL2
-          - wget https://www.libsdl.org/release/SDL2-2.0.5.zip
-          - unzip SDL2-2.0.5.zip
-          - mv SDL2-2.0.5/* .
+          - wget https://www.libsdl.org/release/SDL2-$SDL_VERSION.zip
+          - unzip SDL2-$SDL_VERSION.zip
+          - mv SDL2-$SDL_VERSION/* .
           - cd ..
         script:
           - cd android
+          - sed -i 's/compileSdkVersion 24/compileSdkVersion 25/g' app/build.gradle
           - ./gradlew assembleDebug
           - mv app/build/outputs/apk/app-debug.apk ../deploy/sdlpal-debug.apk
           - cd ..
@@ -79,9 +92,9 @@ matrix:
         language: c
         before_install:
           - cd SDL2
-          - wget https://www.libsdl.org/release/SDL2-2.0.5.zip
-          - unzip SDL2-2.0.5.zip
-          - mv SDL2-2.0.5/* .
+          - wget https://www.libsdl.org/release/SDL2-$SDL_VERSION.zip
+          - unzip SDL2-$SDL_VERSION.zip
+          - mv SDL2-$SDL_VERSION/* .
           - cd ..
         script:
           - cd ios/SDLPal
@@ -95,8 +108,8 @@ matrix:
         env: TARGET=macOS
         language: c
         before_install:
-          - wget https://www.libsdl.org/release/SDL2-2.0.5.dmg
-          - hdiutil attach SDL2-2.0.5.dmg;
+          - wget https://www.libsdl.org/release/SDL2-$SDL_VERSION.dmg
+          - hdiutil attach SDL2-$SDL_VERSION.dmg;
           - sudo cp -a /Volumes/SDL2/SDL2.framework /Library/Frameworks/
         script:
           - cd macos
