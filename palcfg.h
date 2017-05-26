@@ -98,7 +98,7 @@ typedef union tagConfigValue
 	LPCSTR   sValue;
 	DWORD    uValue;
 	INT      iValue;
-	BOOL     bValue;
+	SDL_bool bValue;
 } ConfigValue;
 
 typedef struct tagConfigItem
