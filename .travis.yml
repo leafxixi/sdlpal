@@ -273,16 +273,8 @@ deploy:
   - provider: bintray
     user: palxex
     key:
-      secure: NQl1hNntoXlHyj7uAMiHr3OsMwrEgAeYIIopUSY6Ete9ODVFSTzSqm2lb/Nwq+4ZV5UCYVpDdpBlhWZlxZ/TO9cPVJuwi7oPtRKHNKvAAHRNHWsyO965Y8qtMIo1SGPnNIF5fA8KS9W0iKUAlUubMNHpJBnT2GT2ylrmf7YHkb2mv7OTGswcbMdtQosOy2T4WMCOPTGsu8jcVPX1TMlmhIrbEQqQ4SV8Lz7VoNDPDswlcZrx/X3ZkBHz+iAZQM3vyrAfpJNHpR1qdVXpSQ6AJNrvxAyv3iXCQTmy28o4Skn9ciU4A8kNXSyrKK8O3lKv65XuSGG9XoaldII1SvG3woI2t1dwAxcxmn2/Yf2Uznuostz7j5L5FtJqW9+c4KGXxCh+RgMrTbM1n0yvFMwcxuTIYemFb7OOyLnYf2hhVZXN8GBItoqhZoGboBp0s1usT1XqHSKHtf6RXd9IGOZH1LwRyUNYoLTY8cMJVrzQ9LtpdHeapZgr3idtrRCOmEF7d4/q8WUD+yOZuzUECL2QEnEgg6Ho79chWAUngUCdI4v70nCaMNCwLaTVJY5jtnt3VVUCYJ6vsoimxTbhQT2Cf6HTRcHt1JKhI4cGTBcCRIRdXWqSX4VmxBUCQ/XvskJX5Kj9FJC2/jhZDfIXcKfrYjw0tk3+7FzZuAwt8FnznUs=
+      secure: AVjr0x9BmNdhMgN9xh97Tdngkj/B1dtqTHzKYnFqFdxfEnQGgNuukZ+Gm72bicsbCH0T2dg2wu0VUkSXmsnehyvkwG1pXCIseijiN78Pze/WA0cpaGZ820M5fy7+7JOMQuHKs2+kK5vKaMfo7qfsrd4CVlVfRl3fukIu8mE/SQMidkjMzWstv1pDtKlr5NXtHhScL2sz02AWF24jZnXBR8GHLwBRcVolHhrgIILJk3dZqPQ3/3fpHTu9ugJaFbzT8th9RlbaLtawZskfDk6Gx8giPmUUXK2jyeTBycU7eYoCi1Oc1mbQNXk1pMB/1CWBoF4E7Xyej7SoFsAqoX9/i3lnW9p8Z8O7XaF/W3HD8h18I+iHqg0mfrO31J+r/JMmc4xogU0lBWxzpf1fAGpr8IwONJWeNdrudfRjx5UMwSawOqLs4p848XjFvca6+LXav7RenB38rSIQl8EkVXvnN6bweqMs5dtfdeBHjZZQNCzLuNCDnh97IG/csE3b45OwxOTB3AfhwpF73wQ3OY4SE4dIUWUumzFUU6OG+avHhYdkfyeWOU6LjiZe8780SjiMSUyVXttfyMMrrnsMwHlg4VYTMk88l2XlK1jvFWWR5dGVsMc3BnBqGucvLG6hmW3tdqQH7y77WwSvtcUP1ayBzPO5d2cHfmOzkGXeKibrIqM=
     file: bintray.json
     skip_cleanup: true
     on:
       all_branches: true
-
-notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/922838d6727e919df50e
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: never     # options: [always|never|change] default: always
