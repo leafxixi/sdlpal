@@ -243,10 +243,11 @@ before_deploy:
     fi
   - DATE=$($date -d $(git show -s --format=%cI) "+%F")
   - COMMIT=$(git rev-parse --short HEAD)
+  - set -f
   - |
     $sed -i "
     s/@VERSION@/v$DATE-g$COMMIT-$TRAVIS_BRANCH/g
-    s/@DESC@/$(echo -n $TRAVIS_COMMIT_MESSAGE|tr '\n' ';'|sed -e 's@[\\"]@\\&@g;s@[/&\$]@\\&@g')/g
+    s/@DESC@/$(echo -n $TRAVIS_COMMIT_MESSAGE|tr '\r' '\\r'|tr '\n' '\\n'|sed -e 's@[\\"]@\\&@g;s@[/&\$]@\\&@g')/g
     s/@RELEASE_DATE@/$(git show -s --format=%cI)/g
     s/@VCS_TAG@/$(git describe --tags)/g
     s/@AUTHOR@/$(git show -s --format=%an)/g
@@ -255,6 +256,7 @@ before_deploy:
     s/@BRANCH@/$TRAVIS_BRANCH/g
     s/@COMMITID@/$(git show -s --format=%h)/g
     " bintray.json
+  - set +f
   - cat bintray.json
 
 deploy:
@@ -271,16 +273,8 @@ deploy:
   - provider: bintray
     user: palxex
     key:
-      secure: NQl1hNntoXlHyj7uAMiHr3OsMwrEgAeYIIopUSY6Ete9ODVFSTzSqm2lb/Nwq+4ZV5UCYVpDdpBlhWZlxZ/TO9cPVJuwi7oPtRKHNKvAAHRNHWsyO965Y8qtMIo1SGPnNIF5fA8KS9W0iKUAlUubMNHpJBnT2GT2ylrmf7YHkb2mv7OTGswcbMdtQosOy2T4WMCOPTGsu8jcVPX1TMlmhIrbEQqQ4SV8Lz7VoNDPDswlcZrx/X3ZkBHz+iAZQM3vyrAfpJNHpR1qdVXpSQ6AJNrvxAyv3iXCQTmy28o4Skn9ciU4A8kNXSyrKK8O3lKv65XuSGG9XoaldII1SvG3woI2t1dwAxcxmn2/Yf2Uznuostz7j5L5FtJqW9+c4KGXxCh+RgMrTbM1n0yvFMwcxuTIYemFb7OOyLnYf2hhVZXN8GBItoqhZoGboBp0s1usT1XqHSKHtf6RXd9IGOZH1LwRyUNYoLTY8cMJVrzQ9LtpdHeapZgr3idtrRCOmEF7d4/q8WUD+yOZuzUECL2QEnEgg6Ho79chWAUngUCdI4v70nCaMNCwLaTVJY5jtnt3VVUCYJ6vsoimxTbhQT2Cf6HTRcHt1JKhI4cGTBcCRIRdXWqSX4VmxBUCQ/XvskJX5Kj9FJC2/jhZDfIXcKfrYjw0tk3+7FzZuAwt8FnznUs=
+      secure: FNOxmRnr/ziBs7CUAKQWHwLB+m6eWGranrBcYi2tKYYwr/GvTOTDcSE2ak3XUppGwMThOr+qm8xBshN70fXYtKipK9TorFe63oSC1+anUveS6P1obuq0ACCDxisYAUNRrLhQLbLxumjSX1PoJc4Y80lNMNQUDmylU92Nu2nE6ssGzF5n06PRju3Z+TIS52lzYxSefYGssGzJwN2RzycEBTg94eDP4uWp1MURQTm1aI7exk1Aum04zVmnFGjvfqW3kalIiqrnTqTh1NVgFqoSWCHuS228J8dlx+4IbY4vmvD8v8Ku98Yl9b1XddJg5zV8TD0OSZNeS9tNByt8H5PDMC8cZJbP9CU2ky6xiznShFK909+lU6+wlTwVcfNYrD0N/HoNGsG2FHjUdJp0tt6ZW0lArBvWvW21IuWQeqZnAuwpJ3YOO18SbCekdffXnQiG8ycSBAzaxH1D9Pjdm8QlQ9oPvMKh8/R7PTlVQeliCLKefzeCmuWuiq5PWYORUbcIHb6pRU8L2mIEJwqKmuCMSeCP9KQi4MkEPRIEhSh0R656ZswSL1fGiW377ntxqTyZ/50G2gbcU00GyMzsEr3H3hflkpovP6xZH5GVmmVTPn3kXmAgGTBqMfZ8syww1QzQY0TePjYq1lEo3bk0cIkSQ2dZnZ4uaHYwLduURIcmFOE=
     file: bintray.json
     skip_cleanup: true
     on:
       all_branches: true
-
-notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/922838d6727e919df50e
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: never     # options: [always|never|change] default: always
