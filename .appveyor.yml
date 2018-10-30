@@ -1,6 +1,8 @@
 version: 2.0.{build}
 image:
   - Visual Studio 2017
+init:
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 environment:
   #since appveyor official binding for bintray lacks of ability to specify upload path, we'd to use the manual curl way
   BINTRAY_APIKEY:
@@ -64,11 +66,3 @@ artifacts:
     name: Win32
   - path: sdlpal-uwp.zip
     name: UWP
-
-notifications:
-- provider: Webhook
-  url: https://webhooks.gitter.im/e/2accb0e6e37119e604b3
-  method: POST
-  on_build_success: true
-  on_build_failure: true
-  on_build_status_changed: true

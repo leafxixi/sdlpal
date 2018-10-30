@@ -278,11 +278,3 @@ deploy:
     skip_cleanup: true
     on:
       all_branches: true
-
-notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/922838d6727e919df50e
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: never     # options: [always|never|change] default: always
