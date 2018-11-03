@@ -64,11 +64,3 @@ artifacts:
     name: Win32
   - path: sdlpal-uwp.zip
     name: UWP
-
-notifications:
-- provider: Webhook
-  url: https://webhooks.gitter.im/e/2accb0e6e37119e604b3
-  method: POST
-  on_build_success: true
-  on_build_failure: true
-  on_build_status_changed: true
