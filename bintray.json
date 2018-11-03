@@ -1,6 +1,6 @@
 {
     "package": {
-        "name": "autobuild",
+        "name": "@BRANCH@",
         "repo": "prereleases",
         "subject": "sdlpal",
         "desc": "I was pushed completely automatically",
