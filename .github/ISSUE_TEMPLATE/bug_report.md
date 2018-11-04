@@ -1,0 +1,31 @@
+---
+name: Bug report
+about: Create a report to help us improve
+
+---
+
+**Describe the bug**
+A clear and concise description of what the bug is.
+
+**To Reproduce**
+Steps to reproduce the behavior:
+1. NewGame/Load save( in this case, upload your save file here)
+2. Let Player Charactor do ... 
+3. Continue operation ...
+4. See problem
+
+**Expected behavior**
+A clear and concise description of what you expected to happen.
+
+**Screenshots/Capture**
+If applicable, add screenshots to help explain your problem.
+
+**Environment (please complete the following information):**
+ - OS: [e.g. iOS 10.2.1 jailbroken/Android 8.1 LOS 20181028 nightly/Windows 10 1803 17123.345]
+ - Device [e.g. iPhone 8 Plus/Oneplus 6T/Asus ZenBook3 UX490UA]
+ - Version [e.g. v2.0.2017.1114-149-gd0bf681f-dirty/v2018-11-03-g5adba12]
+ - Config [upload your sdlpal.cfg here/or screenshot for config page, in mobile case]
+ - Verbose Log [ see [FAQ](../../wiki) for steps; upload it here]
+
+**Additional context**
+Add any other context about the problem here.
