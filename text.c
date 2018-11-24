@@ -1595,6 +1595,9 @@ PAL_ShowDialogText(
       }
       else
       {
+         if (g_TextLib.bDialogPosition == kDialogCenter)
+            flag = 1;
+
          if (!g_TextLib.fPlayingRNG && g_TextLib.nCurrentDialogLine == 0)
          {
             //
